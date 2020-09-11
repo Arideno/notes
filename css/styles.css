@@ -1,0 +1,21 @@
+.toolbar {
+  background-color: #3D3F40;
+  padding: 10px;
+}
+
+.toolbar .btn {
+  color: white;
+  background-color: #6A6D6F;
+  margin-left: 10px;
+  height: 40px;
+}
+
+.sidebar {
+  background-color: #1E1E20;
+  height: calc(100vh - 2 * 10px - 40px);
+}
+
+.note_content {
+  background-color: #2C2C2D;
+  height: calc(100vh - 2 * 10px - 40px);
+}
