@@ -13,9 +13,46 @@
 .sidebar {
   background-color: #1E1E20;
   height: calc(100vh - 2 * 10px - 40px);
+  overflow-y: scroll;
 }
 
 .note_content {
-  background-color: #2C2C2D;
   height: calc(100vh - 2 * 10px - 40px);
+}
+
+.note {
+  resize: none;
+  width: 100%;
+  height: 100%;
+  background-color: #2C2C2D;
+  border: none;
+  color: white;
+  padding: 10px;
+}
+
+.note:focus {
+  outline: none;
+}
+
+.sidebar__notes {
+  padding: 20px;
+  margin: 0;
+  color: white;
+  list-style: none;
+}
+
+.sidebar__notes li {
+  display: flex;
+  width: 100%;
+  height: 50px;
+  align-items: center;
+}
+
+.sidebar__notes li.active {
+  background-color: #CA951E;
+}
+
+.sidebar__notes time {
+  display: block;
+  font-size: 0.8em;
 }

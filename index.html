@@ -12,13 +12,14 @@
     />
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/styles.css" />
+    <script src="js/helpers.js"></script>
   </head>
   <body>
     <div class="container">
       <div class="toolbar">
         <div class="row">
           <div class="col">
-            <button class="btn toolbar__delete_note">
+            <button id="delete_note" class="btn toolbar__delete_note">
               <svg
                 width="1em"
                 height="1em"
@@ -36,7 +37,7 @@
                 />
               </svg>
             </button>
-            <button class="btn toolbar__new_note">
+            <button id="new_note" class="btn toolbar__new_note">
               <svg
                 width="1em"
                 height="1em"
@@ -59,12 +60,20 @@
       </div>
       <div class="row no-gutters">
         <div class="col-5">
-          <div id="sidebar" class="sidebar"></div>
+          <div id="sidebar" class="sidebar">
+            <ul id="sidebar__notes" class="sidebar__notes"></ul>
+          </div>
         </div>
         <div class="col-7">
-          <div id="note_content" class="note_content"></div>
+          <div id="note_content" class="note_content">
+            <textarea class="note" id="note"></textarea>
+          </div>
         </div>
       </div>
     </div>
+    <script src="js/note.js"></script>
+    <script src="js/redux/rootReducer.js"></script>
+    <script src="js/createStore.js"></script>
+    <script src="js/index.js"></script>
   </body>
 </html>
