@@ -25,6 +25,9 @@ function refreshSidebar(allInactive = false) {
 }
 
 window.addEventListener('load', () => {
+  if (localStorage.getItem('notes') === null) {
+    localStorage.setItem('notes', JSON.stringify([]))
+  }
   refreshSidebar(true)
 })
 
