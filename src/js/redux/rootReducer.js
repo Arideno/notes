@@ -1,4 +1,4 @@
-function rootReducer(state, action) {
+export default function rootReducer(state, action) {
   if (action.type === 'CREATE_NOTE') {
     return { ...state, createNewNote: true }
   } else if (action.type === 'DELETE_NOTE') {

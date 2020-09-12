@@ -1,3 +1,11 @@
+import { createNoteLi, UUID } from './helpers.js'
+import Note from './note.js'
+import createStore from './createStore.js'
+import rootReducer from './redux/rootReducer.js'
+import Router from './router.js'
+import '../css/normalize.css'
+import '../css/styles.css'
+
 const createNoteButton = document.getElementById('new_note')
 const deleteNoteButton = document.getElementById('delete_note')
 const notesList = document.getElementById('sidebar__notes')
@@ -9,6 +17,13 @@ const store = createStore(rootReducer, {
 })
 
 window.store = store
+
+// Routes
+const router = new Router()
+router.get('/about', function (req) {
+  console.log(req.path)
+})
+router.init()
 
 // Refresh sidebar
 function refreshSidebar(allInactive = false) {

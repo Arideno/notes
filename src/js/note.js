@@ -1,4 +1,6 @@
-function Note(content) {
+import { UUID } from './helpers'
+
+export default function Note(content) {
   this._content = content
   if (this._content === '') {
     this._title = 'New note'

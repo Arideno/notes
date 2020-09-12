@@ -1,4 +1,4 @@
-function createStore(rootReducer, initialState) {
+export default function createStore(rootReducer, initialState) {
   let state = rootReducer(initialState, { type: '__INIT__' })
   const subscribers = []
 
