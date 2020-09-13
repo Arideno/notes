@@ -9,6 +9,7 @@ import '../css/styles.css'
 const createNoteButton = document.getElementById('new_note')
 const deleteNoteButton = document.getElementById('delete_note')
 const notesList = document.getElementById('sidebar__notes')
+const textarea = document.getElementById('note')
 
 const store = createStore(rootReducer, {
   createNewNote: false,
@@ -39,6 +40,8 @@ window.addEventListener('load', () => {
   if (localStorage.getItem('notes') === null) {
     localStorage.setItem('notes', JSON.stringify([]))
   }
+
+  textarea.disabled = true
 
   if (params['id']) {
     const id = params['id']
@@ -75,6 +78,27 @@ window.addEventListener('click', (event) => {
     insertParam('id', noteID)
   }
 })
+
+textarea.oninput = function (event) {
+  const content = event.target.value
+  const state = store.getState()
+  const noteID = state.note.getID()
+
+  let notes = localStorage.getItem('notes')
+  if (notes) {
+    notes = JSON.parse(notes)
+    notes.forEach((note) => {
+      note.__proto__ = Note.prototype
+      if (note.getID() === noteID) {
+        note.setContent(content)
+      }
+    })
+  }
+
+  localStorage.setItem('notes', JSON.stringify(notes))
+
+  refreshSidebar(false)
+}
 
 // On creation
 store.subscribe(() => {
@@ -146,5 +170,8 @@ store.subscribe(() => {
 
     localStorage.setItem('notes', JSON.stringify(notes))
     refreshSidebar()
+
+    textarea.disabled = false
+    textarea.value = state.note.getContent()
   }
 })

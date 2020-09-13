@@ -38,19 +38,16 @@ Note.prototype = {
     return this._content
   },
 
+  setContent: function (content) {
+    this._content = content
+    this._title = content.split('\n')[0]
+  },
+
   getTitle: function () {
     return this._title
   },
 
   getUrlName: function () {
     return this._url
-  },
-
-  getTruncated: function () {
-    if (this._content.length < 30) {
-      return this._content
-    } else {
-      return this._content.substring(0, 29) + '...'
-    }
   },
 }
