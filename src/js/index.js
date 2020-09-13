@@ -1,8 +1,8 @@
-import { createNoteLi, UUID } from './helpers.js'
+import { createNoteLi, UUID, insertParam } from './helpers.js'
 import Note from './note.js'
 import createStore from './createStore.js'
 import rootReducer from './redux/rootReducer.js'
-import Router from './router.js'
+import getParams from './router.js'
 import '../css/normalize.css'
 import '../css/styles.css'
 
@@ -18,12 +18,8 @@ const store = createStore(rootReducer, {
 
 window.store = store
 
-// Routes
-const router = new Router()
-router.get('/about', function (req) {
-  console.log(req.path)
-})
-router.init()
+// Get params
+let params = getParams()
 
 // Refresh sidebar
 function refreshSidebar(allInactive = false) {
@@ -43,7 +39,26 @@ window.addEventListener('load', () => {
   if (localStorage.getItem('notes') === null) {
     localStorage.setItem('notes', JSON.stringify([]))
   }
-  refreshSidebar(true)
+
+  if (params['id']) {
+    const id = params['id']
+    let notes = localStorage.getItem('notes')
+    if (notes) {
+      notes = JSON.parse(notes)
+      notes.forEach((note) => {
+        note.__proto__ = Note.prototype
+        note.setInactive()
+        if (note.getID() === id) {
+          note.setActive()
+          store.dispatch({ type: 'SELECT_NOTE', payload: note })
+        }
+      })
+      localStorage.setItem('notes', JSON.stringify(notes))
+      refreshSidebar(false)
+    }
+  } else {
+    refreshSidebar(true)
+  }
 })
 
 createNoteButton.addEventListener('click', () => {
@@ -52,6 +67,13 @@ createNoteButton.addEventListener('click', () => {
 
 deleteNoteButton.addEventListener('click', () => {
   store.dispatch({ type: 'DELETE_NOTE' })
+})
+
+window.addEventListener('click', (event) => {
+  if (event.target.classList.contains('sidebar__note')) {
+    const noteID = event.target.dataset.id
+    insertParam('id', noteID)
+  }
 })
 
 // On creation
