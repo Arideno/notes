@@ -3,6 +3,7 @@ import Note from './note.js'
 import createStore from './createStore.js'
 import rootReducer from './redux/rootReducer.js'
 import getParams from './router.js'
+import MyTemplateEngine from './templateEngine'
 import '../css/normalize.css'
 import '../css/styles.css'
 
@@ -12,9 +13,8 @@ const notesList = document.getElementById('sidebar__notes')
 const textarea = document.getElementById('note')
 
 const store = createStore(rootReducer, {
-  createNewNote: false,
-  deleteNote: false,
   note: null,
+  notes: [],
 })
 
 window.store = store
@@ -25,7 +25,7 @@ let params = getParams()
 // Refresh sidebar
 function refreshSidebar(allInactive = false) {
   notesList.innerHTML = ''
-  const notes = JSON.parse(localStorage.getItem('notes'))
+  const notes = store.getState().notes
   notes.forEach((note) => {
     note.__proto__ = Note.prototype
     if (allInactive) {
@@ -39,15 +39,20 @@ function refreshSidebar(allInactive = false) {
 window.addEventListener('load', () => {
   if (localStorage.getItem('notes') === null) {
     localStorage.setItem('notes', JSON.stringify([]))
+  } else {
+    let notes = JSON.parse(localStorage.getItem('notes'))
+    notes.forEach((note) => {
+      note.__proto__ = Note.prototype
+    })
+    store.dispatch({ type: 'SET_NOTES', payload: notes })
   }
 
   textarea.disabled = true
 
   if (params['id']) {
     const id = params['id']
-    let notes = localStorage.getItem('notes')
+    let notes = store.getState().notes
     if (notes) {
-      notes = JSON.parse(notes)
       notes.forEach((note) => {
         note.__proto__ = Note.prototype
         note.setInactive()
@@ -56,8 +61,6 @@ window.addEventListener('load', () => {
           store.dispatch({ type: 'SELECT_NOTE', payload: note })
         }
       })
-      localStorage.setItem('notes', JSON.stringify(notes))
-      refreshSidebar(false)
     }
   } else {
     refreshSidebar(true)
@@ -65,113 +68,51 @@ window.addEventListener('load', () => {
 })
 
 createNoteButton.addEventListener('click', () => {
-  store.dispatch({ type: 'CREATE_NOTE' })
+  const note = new Note('')
+  if (store.getState().note) {
+    store.dispatch({ type: 'DESELECT_NOTE' })
+  }
+  store.dispatch({ type: 'CREATE_NOTE', payload: note })
 })
 
 deleteNoteButton.addEventListener('click', () => {
-  store.dispatch({ type: 'DELETE_NOTE' })
+  if (store.getState().note) {
+    store.dispatch({ type: 'DELETE_NOTE', payload: store.getState().note })
+  }
 })
 
 window.addEventListener('click', (event) => {
   if (event.target.classList.contains('sidebar__note')) {
     const noteID = event.target.dataset.id
-    insertParam('id', noteID)
+    const notes = store.getState().notes
+    for (let i = 0; i < notes.length; i++) {
+      if (notes[i].getID() === noteID) {
+        store.dispatch({ type: 'SELECT_NOTE', payload: notes[i] })
+        break
+      }
+    }
+    refreshSidebar(false)
   }
 })
 
 textarea.oninput = function (event) {
   const content = event.target.value
-  const state = store.getState()
-  const noteID = state.note.getID()
 
-  let notes = localStorage.getItem('notes')
-  if (notes) {
-    notes = JSON.parse(notes)
-    notes.forEach((note) => {
-      note.__proto__ = Note.prototype
-      if (note.getID() === noteID) {
-        note.setContent(content)
-      }
-    })
-  }
-
-  localStorage.setItem('notes', JSON.stringify(notes))
-
-  refreshSidebar(false)
+  store.dispatch({ type: 'CHANGE_CONTENT', payload: content })
 }
 
-// On creation
 store.subscribe(() => {
   const state = store.getState()
-
-  if (state.createNewNote) {
-    const note = new Note('')
-    const notes = JSON.parse(localStorage.getItem('notes'))
-    if (notes) {
-      notes.forEach((note) => {
-        note.__proto__ = Note.prototype
-        note.setInactive()
-      })
-      localStorage.setItem('notes', JSON.stringify(notes.concat(note)))
-    } else {
-      localStorage.setItem('notes', JSON.stringify([note]))
-    }
-    insertParam('id', note.getID())
-  }
-})
-
-// On deletion
-store.subscribe(() => {
-  const state = store.getState()
-
-  if (state.deleteNote) {
-    if (state.note) {
-      let notes = JSON.parse(
-        localStorage.getItem('notes') !== null
-          ? localStorage.getItem('notes')
-          : []
-      )
-      for (let i = 0; i < notes.length; i++) {
-        const note = notes[i]
-        note.__proto__ = Note.prototype
-        if (note.getID() === state.note.getID()) {
-          notes.splice(i, 1)
-          break
-        }
-      }
-      localStorage.setItem('notes', JSON.stringify(notes))
-      if (notes.length === 0) {
-        insertParam('id', '')
-      } else {
-        const note = notes[notes.length - 1]
-        note.__proto__ = Note.prototype
-        insertParam('id', note.getID())
-      }
-    }
-  }
-})
-
-// On note select
-store.subscribe(() => {
-  const state = store.getState()
-
+  localStorage.setItem('notes', JSON.stringify(state.notes))
   if (state.note) {
     state.note.setActive()
-    const notes = JSON.parse(localStorage.getItem('notes'))
-
-    for (let i = 0; i < notes.length; i++) {
-      const note = notes[i]
-      note.__proto__ = Note.prototype
-      if (note.getID() === state.note.getID()) {
-        note.setActive()
-        break
-      }
-    }
-
-    localStorage.setItem('notes', JSON.stringify(notes))
-    refreshSidebar()
-
     textarea.disabled = false
     textarea.value = state.note.getContent()
+    if (params['id'] !== state.note.getID()) {
+      insertParam('id', state.note.getID())
+    }
+  } else {
+    textarea.disabled = true
   }
+  refreshSidebar(false)
 })
