@@ -96,8 +96,13 @@ deleteNoteButton.addEventListener('click', () => {
 })
 
 window.addEventListener('click', (event) => {
-  if (event.target.classList.contains('sidebar__note')) {
-    const noteID = event.target.dataset.id
+  if (
+    event.target.classList.contains('sidebar__note') ||
+    event.target.nodeName == 'H2' ||
+    event.target.nodeName == 'TIME'
+  ) {
+    const noteID =
+      event.target.dataset.id || event.target.parentNode.parentNode.dataset.id
     const notes = store.getState().notes
     for (let i = 0; i < notes.length; i++) {
       if (notes[i].getID() === noteID) {
@@ -129,6 +134,7 @@ store.subscribe(() => {
       insertParam('id', state.note.getUrlName())
     }
   } else {
+    textarea.value = ''
     textarea.disabled = true
   }
   refreshSidebar(false)
