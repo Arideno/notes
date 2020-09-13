@@ -40,7 +40,11 @@ Note.prototype = {
 
   setContent: function (content) {
     this._content = content
-    this._title = content.split('\n')[0]
+    if (this._content === '') {
+      this._title = 'New note'
+    } else {
+      this._title = content.split('\n')[0]
+    }
   },
 
   getTitle: function () {
