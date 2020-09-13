@@ -82,7 +82,6 @@ store.subscribe(() => {
 
   if (state.createNewNote) {
     const note = new Note('')
-    store.dispatch({ type: 'SELECT_NOTE', payload: note })
     const notes = JSON.parse(localStorage.getItem('notes'))
     if (notes) {
       notes.forEach((note) => {
@@ -93,7 +92,7 @@ store.subscribe(() => {
     } else {
       localStorage.setItem('notes', JSON.stringify([note]))
     }
-    refreshSidebar()
+    insertParam('id', note.getID())
   }
 })
 
@@ -118,17 +117,12 @@ store.subscribe(() => {
       }
       localStorage.setItem('notes', JSON.stringify(notes))
       if (notes.length === 0) {
-        store.dispatch({
-          type: 'SELECT_NOTE',
-          payload: null,
-        })
+        insertParam('id', '')
       } else {
-        store.dispatch({
-          type: 'SELECT_NOTE',
-          payload: notes[notes.length - 1],
-        })
+        const note = notes[notes.length - 1]
+        note.__proto__ = Note.prototype
+        insertParam('id', note.getID())
       }
-      refreshSidebar(false)
     }
   }
 })
