@@ -1,3 +1,22 @@
+import MyTemplateEngine from './templateEngine'
+
+function htmlEncode(html) {
+  return html.replace(/[&"'\<\>]/g, function (c) {
+    switch (c) {
+      case '&':
+        return '&amp;'
+      case "'":
+        return '&#39;'
+      case '"':
+        return '&quot;'
+      case '<':
+        return '&lt;'
+      default:
+        return '&gt;'
+    }
+  })
+}
+
 function getFormattedDate(date) {
   var year = date.getFullYear()
 
@@ -17,9 +36,17 @@ function createNoteLi(note) {
   if (note.isActive()) {
     li.classList.add('active')
   }
-  div.appendChild(document.createTextNode(note.getTitle()))
+  let title = document.createElement('h2')
+  let titleTemplate = MyTemplateEngine('{% this.title %}', {
+    title: note.getTitle(),
+  })
+  title.appendChild(document.createTextNode(titleTemplate))
+  div.appendChild(title)
   const date = document.createElement('time')
-  date.appendChild(document.createTextNode(getFormattedDate(note.getDate())))
+  let dateTemplate = MyTemplateEngine('Date: {% this.date %}', {
+    date: getFormattedDate(note.getDate()),
+  })
+  date.appendChild(document.createTextNode(dateTemplate))
   div.appendChild(date)
   li.appendChild(div)
   li.dataset.id = note.getID()
@@ -34,4 +61,29 @@ function insertParam(key, value) {
   window.history.replaceState(null, null, '?' + key + '=' + value)
 }
 
-export { getFormattedDate, createNoteLi, UUID, insertParam }
+function string_to_slug(str) {
+  str = str.replace(/^\s+|\s+$/g, '')
+  str = str.toLowerCase()
+
+  var from = 'àáäâèéëêìíïîòóöôùúüûñç·/_,:;'
+  var to = 'aaaaeeeeiiiioooouuuunc------'
+  for (var i = 0, l = from.length; i < l; i++) {
+    str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i))
+  }
+
+  str = str
+    .replace(/[^a-z0-9 -]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+
+  return str
+}
+
+export {
+  getFormattedDate,
+  createNoteLi,
+  UUID,
+  insertParam,
+  htmlEncode,
+  string_to_slug,
+}

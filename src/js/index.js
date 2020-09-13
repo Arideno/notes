@@ -1,4 +1,4 @@
-import { createNoteLi, UUID, insertParam } from './helpers.js'
+import { createNoteLi, UUID, insertParam, htmlEncode } from './helpers.js'
 import Note from './note.js'
 import createStore from './createStore.js'
 import rootReducer from './redux/rootReducer.js'
@@ -13,6 +13,7 @@ const notesList = document.getElementById('sidebar__notes')
 const textarea = document.getElementById('note')
 
 const store = createStore(rootReducer, {
+  created: false,
   note: null,
   notes: [],
 })
@@ -32,6 +33,11 @@ function refreshSidebar(allInactive = false) {
       note.setInactive()
     }
     const li = createNoteLi(note)
+    if (store.getState().created) {
+      if (note.getID() === store.getState().note.getID()) {
+        li.classList.add('animate_add')
+      }
+    }
     notesList.insertBefore(li, notesList.firstChild)
   })
 }
@@ -56,7 +62,7 @@ window.addEventListener('load', () => {
       notes.forEach((note) => {
         note.__proto__ = Note.prototype
         note.setInactive()
-        if (note.getID() === id) {
+        if (note.getUrlName() === id) {
           note.setActive()
           store.dispatch({ type: 'SELECT_NOTE', payload: note })
         }
@@ -77,7 +83,15 @@ createNoteButton.addEventListener('click', () => {
 
 deleteNoteButton.addEventListener('click', () => {
   if (store.getState().note) {
-    store.dispatch({ type: 'DELETE_NOTE', payload: store.getState().note })
+    const sidebar_notes = document.getElementsByClassName('sidebar__note')
+    Array.prototype.forEach.call(sidebar_notes, (noteLi) => {
+      if (noteLi.dataset.id === store.getState().note.getID()) {
+        noteLi.classList.add('animate_delete')
+      }
+    })
+    setTimeout(() => {
+      store.dispatch({ type: 'DELETE_NOTE', payload: store.getState().note })
+    }, 1000)
   }
 })
 
@@ -107,9 +121,12 @@ store.subscribe(() => {
   if (state.note) {
     state.note.setActive()
     textarea.disabled = false
-    textarea.value = state.note.getContent()
-    if (params['id'] !== state.note.getID()) {
-      insertParam('id', state.note.getID())
+    let contentTemplate = MyTemplateEngine('{% this.content %}', {
+      content: state.note.getContent(),
+    })
+    textarea.value = contentTemplate
+    if (params['id'] !== state.note.getUrlName()) {
+      insertParam('id', state.note.getUrlName())
     }
   } else {
     textarea.disabled = true

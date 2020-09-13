@@ -3,19 +3,27 @@ export default function rootReducer(state, action) {
     let note = action.payload
     let notes = [...state.notes]
     notes.push(note)
-    return { ...state, note, notes }
+    return { ...state, note, notes, created: true }
   } else if (action.type === 'DELETE_NOTE') {
     let note = action.payload
     let notes = []
+    let index = 0
     for (let i = 0; i < state.notes.length; i++) {
       if (state.notes[i].getID() !== note.getID()) {
         notes.push(state.notes[i])
+      } else {
+        index = i
       }
     }
     if (notes.length > 0) {
-      return { ...state, note: notes[notes.length - 1], notes }
+      return {
+        ...state,
+        note: index - 1 >= 0 ? notes[index - 1] : notes[0],
+        notes,
+        created: false,
+      }
     } else {
-      return { ...state, note: null, notes }
+      return { ...state, note: null, notes, created: false }
     }
   } else if (action.type === 'SELECT_NOTE') {
     const notes = [...state.notes]
@@ -26,11 +34,12 @@ export default function rootReducer(state, action) {
         note.setActive()
       }
     })
-    return { ...state, note: action.payload, notes }
+    return { ...state, note: action.payload, notes, created: false }
   } else if (action.type === 'SET_NOTES') {
     return {
       ...state,
       notes: action.payload,
+      created: false,
     }
   } else if (action.type === 'DESELECT_NOTE') {
     const notes = [...state.notes]
@@ -39,7 +48,7 @@ export default function rootReducer(state, action) {
         note.setInactive()
       }
     })
-    return { ...state, note: null, notes }
+    return { ...state, note: null, notes, created: false }
   } else if (action.type === 'CHANGE_CONTENT') {
     const notes = [...state.notes]
     notes.forEach((note) => {
@@ -50,6 +59,7 @@ export default function rootReducer(state, action) {
     return {
       ...state,
       notes,
+      created: false,
     }
   }
   return state

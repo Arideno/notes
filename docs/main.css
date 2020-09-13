@@ -356,6 +356,11 @@ template {
 [hidden] {
   display: none;
 }
+h2 {
+  font-size: inherit;
+  margin-bottom: 0;
+}
+
 .toolbar {
   background-color: #3D3F40;
   padding: 10px;
@@ -413,4 +418,40 @@ template {
 .sidebar__notes time {
   display: block;
   font-size: 0.8em;
+}
+
+.sidebar__note {
+  padding: 5px;
+}
+
+.animate_delete {
+  animation: remove-note-animation 1s cubic-bezier(0.55, -0.04, 0.91, 0.94) forwards;
+  transform-origin: 0% 100%;
+}
+
+.animate_add {
+  opacity: 0;
+  animation: new-note-animation .3s linear forwards;
+}
+
+@keyframes new-note-animation {
+  from {
+    opacity: 0;
+    transform: translateY(-400px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes remove-note-animation {
+  0% {
+    opacity: 1;
+    transform: rotateZ(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(600px) rotateZ(90deg);
+  }
 }

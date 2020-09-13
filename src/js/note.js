@@ -1,4 +1,4 @@
-import { UUID } from './helpers'
+import { UUID, string_to_slug } from './helpers'
 
 export default function Note(content) {
   this._content = content
@@ -7,10 +7,10 @@ export default function Note(content) {
   } else {
     this._title = this._content.split('\n')[0]
   }
-  this._url = ''
   this._active = false
   this._date = new Date()
   this._id = UUID()
+  this._url = string_to_slug(this._title) + this._id
 }
 
 Note.prototype = {
@@ -45,6 +45,7 @@ Note.prototype = {
     } else {
       this._title = content.split('\n')[0]
     }
+    this._url = string_to_slug(this._title) + this._id
   },
 
   getTitle: function () {
