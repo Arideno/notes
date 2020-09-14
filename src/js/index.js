@@ -95,7 +95,7 @@ deleteNoteButton.addEventListener('click', () => {
   }
 })
 
-window.addEventListener('click', (event) => {
+window.addEventListener('click touch', (event) => {
   if (
     event.target.classList.contains('sidebar__note') ||
     event.target.nodeName == 'H2' ||
