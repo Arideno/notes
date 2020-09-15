@@ -1,5 +1,19 @@
 import MyTemplateEngine from './templateEngine'
 
+function text_truncate(str, length, ending) {
+  if (length == null) {
+    length = 100
+  }
+  if (ending === null) {
+    ending = ''
+  }
+  if (str.length > length) {
+    return str.substring(0, length - ending.length) + ending
+  } else {
+    return str
+  }
+}
+
 function htmlEncode(html) {
   return html.replace(/[&"'\<\>]/g, function (c) {
     switch (c) {
@@ -86,4 +100,5 @@ export {
   insertParam,
   htmlEncode,
   string_to_slug,
+  text_truncate,
 }

@@ -1,11 +1,11 @@
-import { UUID, string_to_slug } from './helpers'
+import { UUID, string_to_slug, text_truncate } from './helpers'
 
 export default function Note(content) {
   this._content = content
   if (this._content === '') {
     this._title = 'New note'
   } else {
-    this._title = this._content.split('\n')[0]
+    this._title = text_truncate(this._content.split('\n')[0], 25, '')
   }
   this._active = false
   this._date = new Date()
@@ -43,7 +43,7 @@ Note.prototype = {
     if (this._content === '') {
       this._title = 'New note'
     } else {
-      this._title = content.split('\n')[0]
+      this._title = text_truncate(content.split('\n')[0], 25, '')
     }
     this._url = string_to_slug(this._title) + this._id
   },
