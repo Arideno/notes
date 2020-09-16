@@ -1,4 +1,9 @@
-import { createNoteLi, UUID, insertParam, htmlEncode } from './helpers.js'
+import {
+  createNoteLi,
+  UUID,
+  insertParam,
+  htmlEncode
+} from './helpers.js'
 import Note from './note.js'
 import createStore from './createStore.js'
 import rootReducer from './redux/rootReducer.js'
@@ -50,7 +55,10 @@ window.addEventListener('load', () => {
     notes.forEach((note) => {
       note.__proto__ = Note.prototype
     })
-    store.dispatch({ type: 'SET_NOTES', payload: notes })
+    store.dispatch({
+      type: 'SET_NOTES',
+      payload: notes
+    })
   }
 
   textarea.disabled = true
@@ -64,7 +72,10 @@ window.addEventListener('load', () => {
         note.setInactive()
         if (note.getUrlName() === id) {
           note.setActive()
-          store.dispatch({ type: 'SELECT_NOTE', payload: note })
+          store.dispatch({
+            type: 'SELECT_NOTE',
+            payload: note
+          })
         }
       })
     }
@@ -76,9 +87,14 @@ window.addEventListener('load', () => {
 createNoteButton.addEventListener('click', () => {
   const note = new Note('')
   if (store.getState().note) {
-    store.dispatch({ type: 'DESELECT_NOTE' })
+    store.dispatch({
+      type: 'DESELECT_NOTE'
+    })
   }
-  store.dispatch({ type: 'CREATE_NOTE', payload: note })
+  store.dispatch({
+    type: 'CREATE_NOTE',
+    payload: note
+  })
 })
 
 deleteNoteButton.addEventListener('click', () => {
@@ -86,11 +102,15 @@ deleteNoteButton.addEventListener('click', () => {
     const sidebar_notes = document.getElementsByClassName('sidebar__note')
     Array.prototype.forEach.call(sidebar_notes, (noteLi) => {
       if (noteLi.dataset.id === store.getState().note.getID()) {
+        noteLi.classList.remove('animate_add')
         noteLi.classList.add('animate_delete')
       }
     })
     setTimeout(() => {
-      store.dispatch({ type: 'DELETE_NOTE', payload: store.getState().note })
+      store.dispatch({
+        type: 'DELETE_NOTE',
+        payload: store.getState().note
+      })
     }, 1000)
   }
 })
@@ -106,7 +126,10 @@ window.addEventListener('click', (event) => {
     const notes = store.getState().notes
     for (let i = 0; i < notes.length; i++) {
       if (notes[i].getID() === noteID) {
-        store.dispatch({ type: 'SELECT_NOTE', payload: notes[i] })
+        store.dispatch({
+          type: 'SELECT_NOTE',
+          payload: notes[i]
+        })
         break
       }
     }
@@ -117,7 +140,10 @@ window.addEventListener('click', (event) => {
 textarea.oninput = function (event) {
   const content = event.target.value
 
-  store.dispatch({ type: 'CHANGE_CONTENT', payload: content })
+  store.dispatch({
+    type: 'CHANGE_CONTENT',
+    payload: content
+  })
 }
 
 store.subscribe(() => {
