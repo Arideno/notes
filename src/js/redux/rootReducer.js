@@ -3,7 +3,12 @@ export default function rootReducer(state, action) {
     let note = action.payload
     let notes = [...state.notes]
     notes.push(note)
-    return { ...state, note, notes, created: true }
+    return {
+      ...state,
+      note,
+      notes,
+      created: true
+    }
   } else if (action.type === 'DELETE_NOTE') {
     let note = action.payload
     let notes = []
@@ -23,7 +28,12 @@ export default function rootReducer(state, action) {
         created: false,
       }
     } else {
-      return { ...state, note: null, notes, created: false }
+      return {
+        ...state,
+        note: null,
+        notes,
+        created: false
+      }
     }
   } else if (action.type === 'SELECT_NOTE') {
     const notes = [...state.notes]
@@ -34,7 +44,12 @@ export default function rootReducer(state, action) {
         note.setActive()
       }
     })
-    return { ...state, note: action.payload, notes, created: false }
+    return {
+      ...state,
+      note: action.payload,
+      notes,
+      created: false
+    }
   } else if (action.type === 'SET_NOTES') {
     return {
       ...state,
@@ -48,12 +63,18 @@ export default function rootReducer(state, action) {
         note.setInactive()
       }
     })
-    return { ...state, note: null, notes, created: false }
+    return {
+      ...state,
+      note: null,
+      notes,
+      created: false
+    }
   } else if (action.type === 'CHANGE_CONTENT') {
     const notes = [...state.notes]
     notes.forEach((note) => {
       if (note.getID() === state.note.getID()) {
         note.setContent(action.payload)
+        note.setUpdateDate(Date.now())
       }
     })
     return {

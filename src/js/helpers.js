@@ -32,15 +32,24 @@ function htmlEncode(html) {
 }
 
 function getFormattedDate(date) {
-  var year = date.getFullYear()
+  let year = date.getFullYear()
 
-  var month = (1 + date.getMonth()).toString()
+  let month = (1 + date.getMonth()).toString()
   month = month.length > 1 ? month : '0' + month
 
-  var day = date.getDate().toString()
+  let day = date.getDate().toString()
   day = day.length > 1 ? day : '0' + day
 
-  return day + '.' + month + '.' + year
+  let hour = date.getHours().toString()
+  hour = hour.length > 1 ? hour : '0' + hour
+
+  let minutes = date.getMinutes().toString()
+  minutes = minutes.length > 1 ? minutes : '0' + minutes
+
+  let seconds = date.getSeconds().toString()
+  seconds = seconds.length > 1 ? seconds : '0' + seconds
+
+  return day + '.' + month + '.' + year + ' ' + hour + ':' + minutes + ':' + seconds
 }
 
 function createNoteLi(note) {
@@ -56,12 +65,18 @@ function createNoteLi(note) {
   })
   title.appendChild(document.createTextNode(titleTemplate))
   div.appendChild(title)
-  const date = document.createElement('time')
-  let dateTemplate = MyTemplateEngine('Date: {% this.date %}', {
+  const creationDate = document.createElement('time')
+  let creationDateTemplate = MyTemplateEngine('Creation date: {% this.date %}', {
     date: getFormattedDate(note.getDate()),
   })
-  date.appendChild(document.createTextNode(dateTemplate))
-  div.appendChild(date)
+  creationDate.appendChild(document.createTextNode(creationDateTemplate))
+  div.appendChild(creationDate)
+  const updateDate = document.createElement('time')
+  let updateDateTemplate = MyTemplateEngine('Update date: {% this.date %}', {
+    date: getFormattedDate(note.getUpdateDate()),
+  })
+  updateDate.appendChild(document.createTextNode(updateDateTemplate))
+  div.appendChild(updateDate)
   li.appendChild(div)
   li.dataset.id = note.getID()
   return li
